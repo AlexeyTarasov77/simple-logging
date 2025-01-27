@@ -17,7 +17,7 @@ Logger *create_logger(FILE *out, level_t min_level, formatter_t formatter) {
 static void log_msg(Logger *logger, level_t level, const char msg[]) {
   if (level >= logger->min_level) {
     char *record = logger->formatter(level, msg);
-    puts(record);
+    fprintf(logger->out, "%s\n", record);
     free(record);
   }
 }
@@ -30,7 +30,12 @@ void warning(Logger *logger, const char msg[]) {
 void error(Logger *logger, const char msg[]) { log_msg(logger, ERROR, msg); }
 
 int main() {
-  Logger *logger = create_logger(NULL, DEBUG, json_formatter);
+  FILE *log_file = fopen("logs.json", "a");
+  if (log_file == NULL) {
+    perror("logs.json");
+    return 1;
+  }
+  Logger *logger = create_logger(log_file, DEBUG, json_formatter);
   debug(logger, "Debug log");
   info(logger, "Info log");
   warning(logger, "It's a warning");
