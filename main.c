@@ -30,7 +30,9 @@ void warning(Logger *logger, const char msg[]) {
 void error(Logger *logger, const char msg[]) { log_msg(logger, ERROR, msg); }
 
 int main() {
-  Logger *logger = create_logger(NULL, DEBUG, colorized_formatter);
+  Logger *logger = create_logger(NULL, DEBUG, json_formatter);
   debug(logger, "Debug log");
+  info(logger, "Info log");
   warning(logger, "It's a warning");
+  error(logger, "error log");
 }

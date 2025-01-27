@@ -1,4 +1,8 @@
 #include "main.h"
+#include <string.h>
+
+#define RECORD_SIZE 200
+#define DATETIME_SIZE 64
 
 // COLORS
 #define COLOR_GREY "\x1b[0;37m"   // -> DEBUG
@@ -34,23 +38,35 @@ char *colorized_formatter(level_t level, const char msg[]) {
     printf("colorized_formatter: unknown level: %d\n", level);
     exit(1);
   }
-  char *output = malloc(200);
+  char *output = malloc(RECORD_SIZE);
   char level_s[10];
   level_to_str(level, level_s);
   sprintf(output, "%s%s: %s%s", colors[level], level_s, msg, COLOR_RESET);
   return output;
 }
 
-char *default_formatter(level_t level, const char msg[]) {
+static void parse_curr_time(char buf[DATETIME_SIZE]) {
   struct tm *tm = localtime(&(time_t){time(NULL)});
-  char curr_time[64];
-  if (!strftime(curr_time, sizeof(curr_time), "%c", tm)) {
-    puts("logger.default_formatter: Error setting curr_time");
+  if (!strftime(buf, DATETIME_SIZE, "%c", tm)) {
+    puts("Failed to parse curr time");
     exit(1);
   }
-  char *output = malloc(200);
+}
+
+static char *base_formatter(level_t level, const char msg[], char *format) {
+  char *output = malloc(RECORD_SIZE);
+  char curr_time[DATETIME_SIZE];
+  parse_curr_time(curr_time);
   char level_s[10];
   level_to_str(level, level_s);
-  sprintf(output, "%s(%s): %s", level_s, curr_time, msg);
+  sprintf(output, format, level_s, curr_time, msg);
   return output;
+}
+
+char *default_formatter(level_t level, const char msg[]) {
+  return base_formatter(level, msg, "%s(%s): %s");
+}
+
+char *json_formatter(level_t level, const char msg[]) {
+  return base_formatter(level, msg, "{\"%s(%s)\": \"%s\"}");
 }
