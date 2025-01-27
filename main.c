@@ -10,6 +10,7 @@ Logger *create_logger(FILE *out, level_t min_level, formatter_t formatter) {
   }
   Logger *logger = malloc(sizeof(Logger));
   logger->out = out;
+  logger->min_level = min_level;
   logger->formatter = formatter;
   return logger;
 }
@@ -30,14 +31,14 @@ void warning(Logger *logger, const char msg[]) {
 void error(Logger *logger, const char msg[]) { log_msg(logger, ERROR, msg); }
 
 int main() {
-  FILE *log_file = fopen("logs.json", "a");
-  if (log_file == NULL) {
-    perror("logs.json");
-    return 1;
-  }
-  Logger *logger = create_logger(log_file, DEBUG, json_formatter);
+  /* FILE *log_file = fopen("logs.json", "a"); */
+  /* if (log_file == NULL) { */
+  /*   perror("logs.json"); */
+  /*   return 1; */
+  /* } */
+  Logger *logger = create_logger(NULL, DEBUG, colorized_formatter);
   debug(logger, "Debug log");
   info(logger, "Info log");
-  warning(logger, "It's a warning");
-  error(logger, "error log");
+  warning(logger, "Warning log");
+  error(logger, "Error log");
 }
