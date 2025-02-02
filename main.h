@@ -16,9 +16,9 @@ typedef struct {
 } Logger;
 
 Logger *create_logger(FILE *out, level_t min_level, formatter_t formatter);
-void debug(Logger *logger, const char msg[]);
-void info(Logger *logger, const char msg[]);
-void warning(Logger *logger, const char msg[]);
-void error(Logger *logger, const char msg[]);
+void debug(Logger *logger, const char format[], ...);
+void info(Logger *logger, const char format[], ...);
+void warning(Logger *logger, const char format[], ...);
+void error(Logger *logger, const char format[], ...);
 
 #endif
